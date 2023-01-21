@@ -12,13 +12,19 @@
 7. generar tsconfig.json `npx tsc --init`
 8. instalar prisma `npm i prisma -D`
 9. iniciar prisma `npx prisma init`
-9. instalar dotenv `npm i dotenv `
+10. instalar dotenv `npm i dotenv `
+11. `npm install @prisma/client`
+12. `npm i nodemon -D`
+13. `npx prisma migrate dev --name ADD_TABLE_SONG_USER `
 
 
 ### PARA USAR EL PROYECTO
 * `git clone git@github.com:raulTSantos/simple-rest-api-playlist-nodejs.git`
 * `cd simple-rest-api-playlist-nodejs`
 * `npm install`
+
+### PARA EJECUTAR(modo dev)
+* `npm run dev`
 
 
 > DATOS
