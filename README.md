@@ -16,6 +16,8 @@
 11. `npm install @prisma/client`
 12. `npm i nodemon -D`
 13. `npx prisma migrate dev --name ADD_TABLE_SONG_USER `
+14. `npm i --save-dev @types/bcrypt`
+14. `npm i --save-dev @types/jsonwebtoken`
 
 
 ### PARA USAR EL PROYECTO

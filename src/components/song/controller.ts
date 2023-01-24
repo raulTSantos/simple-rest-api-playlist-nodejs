@@ -1,12 +1,12 @@
 
-import type { Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import prisma from "../../datasource";
 
 export const createSong = async (req:Request, res:Response): Promise<void> => {
     try {
         const {body} = req;
         body.year = new Date(body.year);
-        //body.year = year.getFullYear();
+
         const song = await prisma.song.create({
             data: {
                 ...body
@@ -20,13 +20,25 @@ export const createSong = async (req:Request, res:Response): Promise<void> => {
     }
 };
 
-export const findAllSongs = async (_req:Request, res:Response): Promise<void> => {
+export const findAllSongs = async (req:Request, res:Response,next:NextFunction): Promise<void> => {
+    
     try {
-        const songs = await prisma.song.findMany();
-        res.status(200).json({
-            ok: true,
-            data: songs,
-        });
+        const { authorization } = req.headers;
+
+        if(authorization){
+            const songs = await prisma.song.findMany();
+            res.status(200).json({
+                ok: true,
+                data: songs,
+            });
+        }else{
+            const songs = await findPublicSong();
+            res.status(200).json({
+                ok: true,
+                data: songs,
+            });
+        }
+        
     } catch (error) {
         res.status(500).json({ ok: false, message: error });
     }
@@ -44,3 +56,10 @@ export const findSongById = async (req:Request, res:Response):Promise<void> =>{
         res.status(500).json({ ok: false, message: error });      
     }
 };
+function findPublicSong(){
+    return prisma.song.findMany({
+        where: {
+            privatized: false
+        }
+    });
+}
