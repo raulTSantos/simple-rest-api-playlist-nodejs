@@ -1,6 +1,7 @@
 
 import type { NextFunction, Request, Response } from "express";
 import prisma from "../../datasource";
+import jwt from 'jsonwebtoken';
 
 export const createSong = async (req:Request, res:Response): Promise<void> => {
     try {
@@ -24,19 +25,27 @@ export const findAllSongs = async (req:Request, res:Response,next:NextFunction):
     
     try {
         const { authorization } = req.headers;
-
-        if(authorization){
-            const songs = await prisma.song.findMany();
-            res.status(200).json({
-                ok: true,
-                data: songs,
-            });
-        }else{
+        const token = authorization?.split(' ')[1]
+        if(token==null) {
             const songs = await findPublicSong();
             res.status(200).json({
                 ok: true,
                 data: songs,
             });
+            
+        }else{
+            jwt.verify(token, process.env.JWT_ACCESS_SECRET as string, async (err: any, user: any) => {
+                (req as any).user=user;
+                console.log(user);
+                
+                if (err) return res.sendStatus(403);
+                const songs = await prisma.song.findMany();
+                res.status(200).json({
+                    ok: true,
+                    data: songs,
+                });
+            });
+            
         }
         
     } catch (error) {
@@ -48,7 +57,7 @@ export const findSongById = async (req:Request, res:Response):Promise<void> =>{
         const {id} = req.params;
         const song = await prisma.song.findUnique({
             where: {
-                id: Number(id)
+                id:Number(id)
             }
         });
         res.status(200).json({ ok: true, data:song });
